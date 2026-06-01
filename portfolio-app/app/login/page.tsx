@@ -9,19 +9,18 @@ export default function LoginPage() {
 		const formData = new FormData(event.currentTarget);
 
 		await signIn("credentials", {
-			email: formData.get("email"),
-			password: formData.get("password"),
+			email: String(formData.get("email")),
+			password: String(formData.get("password")),
 			callbackUrl: "/dashboard",
 		});
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
-			<input name="email" />
+		<form onSubmit={handleSubmit} className="space-y-3">
+			<input name="email" placeholder="email" />
+			<input name="password" type="password" placeholder="password" />
 
-			<input name="password" type="password" />
-
-			<button>Login</button>
+			<button type="submit">Login</button>
 		</form>
 	);
 }

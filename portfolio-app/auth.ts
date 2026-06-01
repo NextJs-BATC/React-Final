@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import { sql } from "@/app/lib/db";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
+	secret: process.env.AUTH_SECRET,
+
 	session: {
 		strategy: "jwt",
 	},
@@ -11,28 +13,28 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 	providers: [
 		Credentials({
 			credentials: {
-				email: {},
-				password: {},
+				email: { label: "Email", type: "text" },
+				password: { label: "Password", type: "password" },
 			},
+
 			async authorize(credentials) {
 				if (!credentials?.email || !credentials?.password) {
 					return null;
 				}
 
+				const email = String(credentials.email);
+				const password = String(credentials.password);
+
 				const users = await sql`
-          SELECT *
-          FROM users
-          WHERE email = ${String(credentials.email)}
+          SELECT * FROM users
+          WHERE email = ${email}
         `;
 
 				const user = users[0];
 
 				if (!user) return null;
 
-				const passwordsMatch = await bcrypt.compare(
-					String(credentials.password),
-					user.password,
-				);
+				const passwordsMatch = await bcrypt.compare(password, user.password);
 
 				if (!passwordsMatch) return null;
 
@@ -50,7 +52,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 			if (user) {
 				token.id = user.id;
 			}
-
 			return token;
 		},
 
@@ -58,7 +59,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 			if (session.user) {
 				session.user.id = token.id as string;
 			}
-
 			return session;
 		},
 	},
