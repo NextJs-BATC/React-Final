@@ -1,22 +1,28 @@
 import Link from "next/link";
-import { fetchArticles } from "@/app/lib/articles";
+import { sql } from "@/app/lib/db";
 
 export default async function ArticlesPage() {
-	const articles = await fetchArticles();
+	const articles = await sql`
+		SELECT id, title, slug
+		FROM articles
+		ORDER BY id DESC
+	`;
 
 	return (
-		<main className="p-6">
-			<h1 className="mb-6 text-3xl font-bold">Articles</h1>
+		<main className="max-w-3xl mx-auto p-6">
+			<h1 className="text-3xl font-bold mb-6">Articles</h1>
 
-			<div className="grid gap-4">
+			<div className="space-y-4">
 				{articles.map((article) => (
 					<Link
 						key={article.id}
 						href={`/articles/${article.slug}`}
-						className="rounded-lg border p-4 transition hover:shadow-md"
+						className="block p-4 border rounded hover:bg-gray-50 transition"
+						prefetch
 					>
 						<h2 className="text-xl font-semibold">{article.title}</h2>
-						<p className="mt-2 text-sm text-gray-500 line-clamp-2">{article.content}</p>
+
+						<p className="text-sm text-gray-500">Read article →</p>
 					</Link>
 				))}
 			</div>

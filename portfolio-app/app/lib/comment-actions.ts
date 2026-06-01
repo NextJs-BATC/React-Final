@@ -3,6 +3,7 @@
 import { sql } from "./db";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function createComment(formData: FormData) {
 	const session = await auth();
@@ -11,7 +12,8 @@ export async function createComment(formData: FormData) {
 		throw new Error("Unauthorized");
 	}
 
-	const articleId = String(formData.get("article_id"));
+	const articleId = Number(formData.get("article_id"));
+	const slug = String(formData.get("slug"));
 	const content = String(formData.get("content"));
 
 	try {
@@ -24,10 +26,12 @@ export async function createComment(formData: FormData) {
 		throw new Error("Failed to create comment");
 	}
 
-	revalidatePath(`/articles`);
+	revalidatePath("/articles");
+	revalidatePath(`/articles/${slug}`);
+	redirect(`/articles/${slug}`);
 }
 
-export async function deleteComment(commentId: string) {
+export async function deleteComment(commentId: string, slug: string) {
 	const session = await auth();
 
 	if (!session?.user?.id) {
@@ -45,5 +49,5 @@ export async function deleteComment(commentId: string) {
 		throw new Error("Failed to delete comment");
 	}
 
-	revalidatePath(`/articles`);
+	revalidatePath(`/articles/${slug}`);
 }
