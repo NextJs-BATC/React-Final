@@ -2,7 +2,8 @@ export const projects = [
 	{
 		title: "Recipe App",
 		description: "Full CRUD recipe manager with auth",
-		href: "/dashboard/recipes",
+		href: "https://recipe-ohpdj7gu8-jarvisappleslices-projects.vercel.app/",
+		external: true,
 	},
 	{
 		title: "Articles Platform",
