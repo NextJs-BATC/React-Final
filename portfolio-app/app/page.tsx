@@ -25,7 +25,6 @@ export default function Home() {
 					</p>
 				</div>
 
-				{/* ✅ INSERT CAROUSEL HERE */}
 				<div className="w-full mt-10">
 					<ProjectsCarousel />
 				</div>
