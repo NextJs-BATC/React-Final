@@ -1,4 +1,5 @@
 import { createInquiry } from "@/app/lib/contact-actions";
+import { sql } from "@/app/lib/db";
 
 export default async function ContactPage({
 	searchParams,
@@ -6,6 +7,11 @@ export default async function ContactPage({
 	searchParams?: Promise<{ success?: string }>;
 }) {
 	const params = searchParams ? await searchParams : {};
+	const users = await sql`
+	SELECT id, name
+	FROM users
+	ORDER BY name
+`;
 
 	return (
 		<main className="max-w-2xl mx-auto p-6">
@@ -18,24 +24,26 @@ export default async function ContactPage({
 			)}
 
 			<form action={createInquiry} className="space-y-4">
-				<input
-					name="name"
-					placeholder="Your name"
-					required
-					className="w-full border p-2 rounded"
-				/>
+				<select name="recipient_id" required className="w-full border p-2 rounded">
+					<option value="">Select recipient</option>
+
+					{users.map((user) => (
+						<option key={user.id} value={user.id}>
+							{user.name}
+						</option>
+					))}
+				</select>
 
 				<input
-					name="email"
-					type="email"
-					placeholder="Your email"
+					name="subject"
+					placeholder="Subject"
 					required
 					className="w-full border p-2 rounded"
 				/>
 
 				<textarea
-					name="message"
-					placeholder="Your message"
+					name="content"
+					placeholder="Message"
 					required
 					rows={6}
 					className="w-full border p-2 rounded"

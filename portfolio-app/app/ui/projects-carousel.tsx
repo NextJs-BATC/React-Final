@@ -1,7 +1,39 @@
 import Link from "next/link";
-import { projects } from "@/app/lib/projects";
+import { sql } from "@/app/lib/db";
 
-export default function ProjectsCarousel() {
+type Project = {
+	title: string;
+	description: string;
+	href: string;
+	external: boolean;
+};
+
+export default async function ProjectsCarousel() {
+	const dbProjects = await sql`
+		SELECT title, content, slug
+		FROM articles
+		ORDER BY created_at DESC
+	`;
+
+	const externalProjects: Project[] = [
+		{
+			title: "Recipe App",
+			description: "Full CRUD recipe manager with auth",
+			href: "/dashboard/recipes",
+			external: false,
+		},
+	];
+
+	const projects: Project[] = [
+		...dbProjects.map((p) => ({
+			title: p.title,
+			description: (p.content ?? "").slice(0, 120) + "...",
+			href: `/articles/${p.slug}`,
+			external: false,
+		})),
+		...externalProjects,
+	];
+
 	return (
 		<section className="mt-10">
 			<h2 className="text-2xl font-bold mb-4">Projects</h2>
